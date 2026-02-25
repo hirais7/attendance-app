@@ -5,7 +5,7 @@
     --secondary: #000000;
     /* Giants Black */
     --success: #10b981;
-    --bg-gradient: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    --bg-gradient: #000000;
     --card-bg: rgba(30, 30, 30, 0.95);
     --glass-border: rgba(255, 143, 0, 0.2);
     --text-main: #ffffff;

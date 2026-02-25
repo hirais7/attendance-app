@@ -23,7 +23,7 @@ function init() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Pre-fill from localStorage if available (optional convenience)
+    // Pre-fill from localStorage if available
     const savedData = JSON.parse(localStorage.getItem('traineeData'));
     if (savedData) {
         mainTraineeId.value = savedData.id || '';
@@ -36,10 +36,6 @@ function init() {
     btnClockIn.addEventListener('click', () => handleAction('clockIn'));
     btnClockOut.addEventListener('click', () => handleAction('clockOut'));
     btnComplete.addEventListener('click', () => handleAction('complete'));
-
-    if (GAS_URL.includes('YOUR_GAS')) {
-        showToast('⚠ GAS_URLを設定してください');
-    }
 }
 
 function updateClock() {
@@ -50,9 +46,6 @@ function updateClock() {
 }
 
 function updateStatusUI() {
-    // Shared device mode: buttons are usually both enabled 
-    // because we don't know the status of the "next" person.
-    // However, we can keep the visual indicator for the last action.
     if (isWorking) {
         statusBadge.textContent = '前回の操作: 出勤';
         statusBadge.classList.add('working');
@@ -60,8 +53,6 @@ function updateStatusUI() {
         statusBadge.textContent = '前回: 完了/退勤';
         statusBadge.classList.remove('working');
     }
-
-    // In collaborative mode, we keep both buttons primary/enabled
     btnClockIn.disabled = false;
     btnClockOut.disabled = false;
 }
@@ -78,7 +69,6 @@ async function handleAction(action) {
 
     showLoading(true);
 
-    // Save to localStorage for convenience (pre-fills for next time)
     localStorage.setItem('traineeData', JSON.stringify({ id, name }));
 
     const payload = {
@@ -118,29 +108,17 @@ async function handleAction(action) {
 }
 
 function showLoading(show) {
-    loadingOverlay.classList.toggle('hidden', !show);
+    if (loadingOverlay) loadingOverlay.classList.toggle('hidden', !show);
 }
 
 function showToast(message) {
-    toastEl.textContent = message;
-    toastEl.classList.remove('hidden');
-    setTimeout(() => {
-        toastEl.classList.add('hidden');
-    }, 4000);
-}
-
-document.addEventListener('DOMContentLoaded', init);
-
-function showLoading(show) {
-    loadingOverlay.classList.toggle('hidden', !show);
-}
-
-function showToast(message) {
-    toastEl.textContent = message;
-    toastEl.classList.remove('hidden');
-    setTimeout(() => {
-        toastEl.classList.add('hidden');
-    }, 3000);
+    if (toastEl) {
+        toastEl.textContent = message;
+        toastEl.classList.remove('hidden');
+        setTimeout(() => {
+            toastEl.classList.add('hidden');
+        }, 3000);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);
