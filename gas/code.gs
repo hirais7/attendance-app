@@ -45,7 +45,12 @@ function doPost(e) {
       const data = recordSheet.getDataRange().getValues();
       let rowIndex = -1;
       for (let i = data.length - 1; i >= 1; i--) {
-        if (data[i][0] === dateStr && data[i][1] === traineeId && data[i][4] === '') {
+        const cellDate = data[i][0];
+        const cellDateStr = cellDate instanceof Date ? Utilities.formatDate(cellDate, 'Asia/Tokyo', 'yyyy/MM/dd') : String(cellDate);
+        const cellTraineeId = String(data[i][1]);
+        const cellClockOut = data[i][4];
+        
+        if (cellDateStr === dateStr && cellTraineeId === String(traineeId) && cellClockOut === '') {
           rowIndex = i + 1;
           break;
         }
