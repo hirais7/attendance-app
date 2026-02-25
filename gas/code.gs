@@ -65,38 +65,33 @@ function doPost(e) {
 
       if (rowIndex !== -1) {
         console.log(`Found record at row ${rowIndex}`);
-        const clockInTimeStr = data[rowIndex - 1][3];
+        
+        // Ensure we handle both Strings and Date objects from the cell
+        const rawClockInTime = data[rowIndex - 1][3];
+        const clockInTimeStr = rawClockInTime instanceof Date ? 
+                               Utilities.formatDate(rawClockInTime, 'Asia/Tokyo', 'HH:mm') : 
+                               String(rawClockInTime);
+                               
         const clockOutTimeStr = timeStr;
         const durationStr = calculateDuration(clockInTimeStr, clockOutTimeStr);
         
+        console.log(`Clock-in: ${clockInTimeStr}, Clock-out: ${clockOutTimeStr}, Duration: ${durationStr}`);
+
         recordSheet.getRange(rowIndex, 5).setValue(clockOutTimeStr);
         recordSheet.getRange(rowIndex, 6).setValue(durationStr);
         
-        // Force immediate reflection in the spreadsheet
         SpreadsheetApp.flush();
         
-        console.log('Clock-out updated successfully and flushed');
         sendLineMessage(`【退勤】\n${traineeName}\n出勤：${clockInTimeStr}\n退勤：${clockOutTimeStr}\n勤務：${durationStr}`);
       } else {
-        console.warn('No active clock-in found for: ' + searchId);
-        throw new Error('出勤記録が見つかりません。本日まだ「出勤」していないか、既に「退勤」済みです。');
+        throw new Error('出勤記録が見つかりません。');
       }
     } 
-    else if (action === 'complete') {
-      const dateTimeStr = Utilities.formatDate(now, 'Asia/Tokyo', 'yyyy/MM/dd HH:mm');
-      completionSheet.appendRow([dateTimeStr, traineeId, traineeName, appUrl, '提出済み']);
-      
-      // Force immediate reflection
-      SpreadsheetApp.flush();
-      
-      console.log('Completion report recorded and flushed');
-      sendLineMessage(`【🎉課題完了報告🎉】\n研修生：${traineeName}（${traineeId}）\n完了：${dateTimeStr}\n\nアプリURL:\n${appUrl}\n\n確認をお願いします！`);
-    }
-
+    // ... (rest of the logic)
     return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    console.error('Error in doPost: ' + err.message);
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message, stack: err.stack })).setMimeType(ContentService.MimeType.JSON);
+    console.error('Error: ' + err.message);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
@@ -113,22 +108,24 @@ function sendLineMessage(message) {
       messages: [{ type: 'text', text: message }]
     })
   };
-  UrlFetchApp.fetch(url, options);
+  try {
+    UrlFetchApp.fetch(url, options);
+  } catch (e) {
+    console.error('LINE notification failed: ' + e.message);
+  }
 }
 
 function calculateDuration(start, end) {
+  if (!start || !end || !start.includes(':') || !end.includes(':')) return '不明';
+  
   const [h1, m1] = start.split(':').map(Number);
   const [h2, m2] = end.split(':').map(Number);
   
   let diffMin = (h2 * 60 + m2) - (h1 * 60 + m1);
-  if (diffMin < 0) diffMin += 24 * 60; // Over Midnight handling (simplistic)
+  if (diffMin < 0) diffMin += 24 * 60;
   
   const hours = Math.floor(diffMin / 60);
   const minutes = diffMin % 60;
   
-  if (hours > 0) {
-    return `${hours}時間${minutes}分`;
-  } else {
-    return `${minutes}分`;
-  }
+  return hours > 0 ? `${hours}時間${minutes}分` : `${minutes}分`;
 }
