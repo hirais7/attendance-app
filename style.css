@@ -178,7 +178,7 @@ header {
     right: 0;
     width: 120px;
     height: 120px;
-    background-image: url('giabbit_character.png');
+    background-image: url('giabbit.svg');
     background-size: contain;
     background-repeat: no-repeat;
     z-index: 10;
