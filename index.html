@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,11 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+JP:wght@400;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="app-container">
         <header>
@@ -25,9 +29,10 @@
         <main>
             <section class="status-card">
                 <div class="time-display" id="time-display">09:00:00</div>
-                <div class="user-info">
+                <div class="user-info" id="user-info-display">
                     <span class="label">研修生:</span>
                     <span class="value" id="user-name">読み込み中...</span>
+                    <button id="btn-edit-user" class="btn-icon-small">✏️</button>
                 </div>
                 <div class="status-badge" id="work-status">勤務外</div>
             </section>
@@ -56,6 +61,23 @@
         </footer>
     </div>
 
+    <!-- Registration Modal -->
+    <div id="modal-registration" class="overlay hidden">
+        <div class="modal">
+            <h2>プロフィール設定</h2>
+            <p>研修生情報を入力してください</p>
+            <div class="input-group">
+                <label for="input-trainee-id">研修生ID</label>
+                <input type="text" id="input-trainee-id" placeholder="user01" value="user01">
+            </div>
+            <div class="input-group">
+                <label for="input-trainee-name">氏名</label>
+                <input type="text" id="input-trainee-name" placeholder="田中 太郎">
+            </div>
+            <button id="btn-save-user" class="btn btn-primary">保存して開始</button>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast hidden"></div>
 
@@ -75,4 +97,5 @@
         }
     </script>
 </body>
+
 </html>

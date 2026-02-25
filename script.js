@@ -1,15 +1,9 @@
 // Configuration
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgL-Gpq0Jg3BFz7Ku-KGREyMmrLNRVRjFrbQ0YY8MTEQJGHtmae1VNdR0FV2MiIgB-/exec';
-
-// Predefined trainee for this task (as requested in the prompt)
-const DEFAULT_TRAINEE = {
-    id: 'user01',
-    name: 'あなたの名前'
-};
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgL-Gpq0Jg3BFz7Ku-KGREyMmrNLRVRjFrbQ0YY8MTEQJGHtmae1VNdR0FV2MiIgB-/exec';
 
 // State
 let isWorking = localStorage.getItem('isWorking') === 'true';
-let traineeData = JSON.parse(localStorage.getItem('traineeData')) || DEFAULT_TRAINEE;
+let traineeData = JSON.parse(localStorage.getItem('traineeData')) || null;
 
 // DOM Elements
 const timeDisplay = document.getElementById('time-display');
@@ -19,40 +13,71 @@ const statusBadge = document.getElementById('work-status');
 const btnClockIn = document.getElementById('btn-clock-in');
 const btnClockOut = document.getElementById('btn-clock-out');
 const btnComplete = document.getElementById('btn-complete');
+const btnEditUser = document.getElementById('btn-edit-user');
 const loadingOverlay = document.getElementById('loading');
 const toastEl = document.getElementById('toast');
+
+// Modal Elements
+const modalRegistration = document.getElementById('modal-registration');
+const inputTraineeId = document.getElementById('input-trainee-id');
+const inputTraineeName = document.getElementById('input-trainee-name');
+const btnSaveUser = document.getElementById('btn-save-user');
 
 // Initialize
 function init() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    userNameDisplay.textContent = traineeData.name;
+    if (!traineeData) {
+        showRegistrationModal();
+    } else {
+        userNameDisplay.textContent = traineeData.name;
+    }
+
     updateStatusUI();
 
     // Add Event Listeners
     btnClockIn.addEventListener('click', () => handleAction('clockIn'));
     btnClockOut.addEventListener('click', () => handleAction('clockOut'));
     btnComplete.addEventListener('click', () => handleAction('complete'));
+    btnEditUser.addEventListener('click', showRegistrationModal);
+    btnSaveUser.addEventListener('click', saveTraineeData);
 
-    // Check if GAS_URL is set
-    if (GAS_URL === 'YOUR_GAS_WEB_APP_URL') {
-        showToast('⚠ GAS_URLをscript.jsに設定してください');
+    if (GAS_URL.includes('YOUR_GAS')) {
+        showToast('⚠ GAS_URLを設定してください');
     }
 }
 
 function updateClock() {
     const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    timeDisplay.textContent = `${h}:${m}:${s}`;
+    timeDisplay.textContent = now.toLocaleTimeString('ja-JP', { hour12: false });
 
-    const y = now.getFullYear();
-    const mo = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const days = ['日', '月', '火', '水', '木', '金', '土'];
-    dateDisplay.textContent = `${y}/${mo}/${d} (${days[now.getDay()]})`;
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
+    dateDisplay.textContent = now.toLocaleDateString('ja-JP', options);
+}
+
+function showRegistrationModal() {
+    if (traineeData) {
+        inputTraineeId.value = traineeData.id;
+        inputTraineeName.value = traineeData.name;
+    }
+    modalRegistration.classList.remove('hidden');
+}
+
+function saveTraineeData() {
+    const id = inputTraineeId.value.trim();
+    const name = inputTraineeName.value.trim();
+
+    if (!id || !name) {
+        alert('IDと名前を入力してください');
+        return;
+    }
+
+    traineeData = { id, name };
+    localStorage.setItem('traineeData', JSON.stringify(traineeData));
+    userNameDisplay.textContent = name;
+    modalRegistration.classList.add('hidden');
+    showToast('✅ プロフィールを保存しました');
 }
 
 function updateStatusUI() {
@@ -70,8 +95,8 @@ function updateStatusUI() {
 }
 
 async function handleAction(action) {
-    if (GAS_URL === 'YOUR_GAS_WEB_APP_URL') {
-        alert('先にGoogle Apps Scriptをデプロイし、そのURLをscript.jsのGAS_URLに設定してください。');
+    if (!traineeData) {
+        showRegistrationModal();
         return;
     }
 
@@ -81,18 +106,18 @@ async function handleAction(action) {
         action: action,
         traineeId: traineeData.id,
         traineeName: traineeData.name,
-        appUrl: window.location.href
+        appUrl: window.location.href.split('?')[0].split('#')[0]
     };
 
     try {
-        const response = await fetch(GAS_URL, {
+        // GAS handles POST with no-cors but it's tricky to get result.
+        // We use the default POST and assume success if no error.
+        await fetch(GAS_URL, {
             method: 'POST',
-            mode: 'no-cors', // GAS often requires no-cors for simple POSTs
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-
-        // Note: With no-cors, we can't read the response body.
-        // We assume success if no error is thrown by fetch.
 
         if (action === 'clockIn') {
             isWorking = true;
@@ -109,7 +134,7 @@ async function handleAction(action) {
         updateStatusUI();
     } catch (error) {
         console.error('Error:', error);
-        showToast('❌ エラーが発生しました');
+        showToast('❌ 通信エラーが発生しました');
     } finally {
         showLoading(false);
     }
