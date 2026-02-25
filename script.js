@@ -67,9 +67,23 @@ async function handleAction(action) {
         return;
     }
 
-    showLoading(true);
-
+    // --- Start: Optimistic UI Update (Immediate response) ---
     localStorage.setItem('traineeData', JSON.stringify({ id, name }));
+
+    if (action === 'clockIn') {
+        isWorking = true;
+        localStorage.setItem('isWorking', 'true');
+        showToast(`✅ ${name}さん：出勤しました`);
+    } else if (action === 'clockOut') {
+        isWorking = false;
+        localStorage.setItem('isWorking', 'false');
+        showToast(`✅ ${name}さん：退勤しました`);
+    } else if (action === 'complete') {
+        showToast(`🎉 ${name}さん：課題完了を報告！`);
+    }
+
+    updateStatusUI();
+    // --- End: Optimistic UI Update ---
 
     const payload = {
         action: action,
@@ -78,33 +92,16 @@ async function handleAction(action) {
         appUrl: window.location.href.split('?')[0].split('#')[0]
     };
 
-    try {
-        await fetch(GAS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (action === 'clockIn') {
-            isWorking = true;
-            localStorage.setItem('isWorking', 'true');
-            showToast(`✅ ${name}さん：出勤しました`);
-        } else if (action === 'clockOut') {
-            isWorking = false;
-            localStorage.setItem('isWorking', 'false');
-            showToast(`✅ ${name}さん：退勤しました`);
-        } else if (action === 'complete') {
-            showToast(`🎉 ${name}さん：課題完了を報告！`);
-        }
-
-        updateStatusUI();
-    } catch (error) {
-        console.error('Error:', error);
-        showToast('❌ 通信エラーが発生しました');
-    } finally {
-        showLoading(false);
-    }
+    // Send data to GAS in the background
+    fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' }, // Using text/plain to avoid preflight (faster)
+        body: JSON.stringify(payload)
+    }).catch(error => {
+        console.error('Background Fetch Error:', error);
+        showToast('⚠ 通信エラー（送信に失敗した可能性があります）');
+    });
 }
 
 function showLoading(show) {
