@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>出退勤打刻アプリ | Attendance</title>
-    <link rel="stylesheet" href="style.css?v=20260225v3">
+    <link rel="stylesheet" href="style.css?v=20260225v4">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-192.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icon-192.svg">
@@ -94,25 +94,14 @@
         <div class="spinner"></div>
     </div>
 
-    <script src="script.js?v=20260225v3"></script>
+    <script src="script.js?v=20260225v4"></script>
     <script>
+        // 以前のService Worker（古いキャッシュ）を強制的に解除する
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => {
-                        console.log('SW registered!', reg);
-                        reg.onupdatefound = () => {
-                            const installingWorker = reg.installing;
-                            installingWorker.onstatechange = () => {
-                                if (installingWorker.state === 'installed') {
-                                    if (navigator.serviceWorker.controller) {
-                                        window.location.reload();
-                                    }
-                                }
-                            };
-                        };
-                    })
-                    .catch(err => console.log('SW registration failed!', err));
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
             });
         }
     </script>
