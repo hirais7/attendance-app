@@ -67,7 +67,8 @@ async function handleAction(action) {
         return;
     }
 
-    // --- Immediate Status Save ---
+    showLoading(true);
+
     localStorage.setItem('traineeData', JSON.stringify({ id, name }));
 
     const payload = {
@@ -77,30 +78,35 @@ async function handleAction(action) {
         appUrl: window.location.href.split('?')[0].split('#')[0]
     };
 
-    // --- Optimistic UI Refresh (Instant feedback) ---
-    if (action === 'clockIn') {
-        isWorking = true;
-        localStorage.setItem('isWorking', 'true');
-        showToast(`✅ ${name}さん：出勤しました`);
-    } else if (action === 'clockOut') {
-        isWorking = false;
-        localStorage.setItem('isWorking', 'false');
-        showToast(`✅ ${name}さん：退勤しました`);
-    } else if (action === 'complete') {
-        showToast(`🎉 ${name}さん：課題完了を報告！`);
+    try {
+        // GASへの送信が完了するまで待機（確実性を優先）
+        const response = await fetch(GAS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // 通信成功後の処理
+        if (action === 'clockIn') {
+            isWorking = true;
+            localStorage.setItem('isWorking', 'true');
+            showToast(`✅ ${name}さん：出勤しました`);
+        } else if (action === 'clockOut') {
+            isWorking = false;
+            localStorage.setItem('isWorking', 'false');
+            showToast(`✅ ${name}さん：退勤しました`);
+        } else if (action === 'complete') {
+            showToast(`🎉 ${name}さん：課題完了を報告！`);
+        }
+
+        updateStatusUI();
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ 通信エラーが発生しました');
+    } finally {
+        showLoading(false);
     }
-
-    updateStatusUI();
-
-    // --- Background Communication (No loading screen) ---
-    fetch(GAS_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).catch(error => {
-        console.error('GAS Send Error:', error);
-    });
 }
 
 function showLoading(show) {
