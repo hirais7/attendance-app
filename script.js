@@ -28,7 +28,7 @@ function init() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    if (!traineeData) {
+    if (!traineeData || traineeData.name === 'あなたの名前') {
         showRegistrationModal();
     } else {
         userNameDisplay.textContent = traineeData.name;
