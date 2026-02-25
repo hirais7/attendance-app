@@ -35,52 +35,60 @@ function doPost(e) {
   let result = { success: true };
 
   try {
+    console.log(`Action: ${action}, ID: ${traineeId}, Name: ${traineeName}`);
+    
     if (action === 'clockIn') {
-      // Record Clock-in
-      recordSheet.appendRow([dateStr, traineeId, traineeName, timeStr, '', '']);
+      try {
+        recordSheet.appendRow([dateStr, traineeId, traineeName, timeStr, '', '']);
+        console.log('Clock-in recorded successfully');
+      } catch (e) {
+        console.error('Failed to append clock-in row: ' + e.message);
+        throw e;
+      }
       sendLineMessage(`【出勤】\n${traineeName}\n${dateStr} ${timeStr}`);
     } 
     else if (action === 'clockOut') {
-      // Find the latest clock-in for today with no clock-out
       const data = recordSheet.getDataRange().getValues();
       let rowIndex = -1;
+      
+      console.log(`Searching for last clock-in record for ${traineeId}...`);
       for (let i = data.length - 1; i >= 1; i--) {
-        const cellDate = data[i][0];
-        const cellDateStr = cellDate instanceof Date ? Utilities.formatDate(cellDate, 'Asia/Tokyo', 'yyyy/MM/dd') : String(cellDate);
-        const cellTraineeId = String(data[i][1]);
+        const cellTraineeId = String(data[i][1]).trim();
         const cellClockOut = data[i][4];
         
-        if (cellDateStr === dateStr && cellTraineeId === String(traineeId) && cellClockOut === '') {
+        if (cellTraineeId === String(traineeId).trim() && (cellClockOut === '' || cellClockOut === null)) {
           rowIndex = i + 1;
           break;
         }
       }
 
       if (rowIndex !== -1) {
+        console.log(`Found record at row ${rowIndex}`);
         const clockInTimeStr = data[rowIndex - 1][3];
         const clockOutTimeStr = timeStr;
-        
-        // Calculate work duration
         const durationStr = calculateDuration(clockInTimeStr, clockOutTimeStr);
         
         recordSheet.getRange(rowIndex, 5).setValue(clockOutTimeStr);
         recordSheet.getRange(rowIndex, 6).setValue(durationStr);
         
+        console.log('Clock-out updated successfully');
         sendLineMessage(`【退勤】\n${traineeName}\n出勤：${clockInTimeStr}\n退勤：${clockOutTimeStr}\n勤務：${durationStr}`);
       } else {
+        console.warn('No active clock-in found');
         throw new Error('出勤記録が見つかりません。');
       }
     } 
     else if (action === 'complete') {
       const dateTimeStr = Utilities.formatDate(now, 'Asia/Tokyo', 'yyyy/MM/dd HH:mm');
       completionSheet.appendRow([dateTimeStr, traineeId, traineeName, appUrl, '提出済み']);
-      
+      console.log('Completion report recorded successfully');
       sendLineMessage(`【🎉課題完了報告🎉】\n研修生：${traineeName}（${traineeId}）\n完了：${dateTimeStr}\n\nアプリURL:\n${appUrl}\n\n確認をお願いします！`);
     }
 
     return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message })).setMimeType(ContentService.MimeType.JSON);
+    console.error('Error in doPost: ' + err.message);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message, stack: err.stack })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
