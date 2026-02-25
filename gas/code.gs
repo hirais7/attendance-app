@@ -72,17 +72,24 @@ function doPost(e) {
         recordSheet.getRange(rowIndex, 5).setValue(clockOutTimeStr);
         recordSheet.getRange(rowIndex, 6).setValue(durationStr);
         
-        console.log('Clock-out updated successfully');
+        // Force immediate reflection in the spreadsheet
+        SpreadsheetApp.flush();
+        
+        console.log('Clock-out updated successfully and flushed');
         sendLineMessage(`【退勤】\n${traineeName}\n出勤：${clockInTimeStr}\n退勤：${clockOutTimeStr}\n勤務：${durationStr}`);
       } else {
-        console.warn('No active clock-in found');
-        throw new Error('出勤記録が見つかりません。');
+        console.warn('No active clock-in found for: ' + searchId);
+        throw new Error('出勤記録が見つかりません。本日まだ「出勤」していないか、既に「退勤」済みです。');
       }
     } 
     else if (action === 'complete') {
       const dateTimeStr = Utilities.formatDate(now, 'Asia/Tokyo', 'yyyy/MM/dd HH:mm');
       completionSheet.appendRow([dateTimeStr, traineeId, traineeName, appUrl, '提出済み']);
-      console.log('Completion report recorded successfully');
+      
+      // Force immediate reflection
+      SpreadsheetApp.flush();
+      
+      console.log('Completion report recorded and flushed');
       sendLineMessage(`【🎉課題完了報告🎉】\n研修生：${traineeName}（${traineeId}）\n完了：${dateTimeStr}\n\nアプリURL:\n${appUrl}\n\n確認をお願いします！`);
     }
 
