@@ -1,5 +1,5 @@
 // Configuration
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyE0TLrri0_XvARr0vjldYjoeT7PiHp8TZifxX7FYNr75HYkn9fSx7FcNmAfBcOJSLS/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyuYyGpsAj-ZXY8YIANaIv6ZALUDjfBDIPdHiRfZcWC56KnB7hGYE2kScnG2eIYYhej/exec';
 
 // State
 let isWorking = localStorage.getItem('isWorking') === 'true';

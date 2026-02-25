@@ -53,10 +53,11 @@ function doPost(e) {
       
       console.log(`Searching for last clock-in record for ${traineeId}...`);
       for (let i = data.length - 1; i >= 1; i--) {
-        const cellTraineeId = String(data[i][1]).trim();
-        const cellClockOut = data[i][4];
+        const cellTraineeId = String(data[i][1] || '').trim().toLowerCase();
+        const searchId = String(traineeId || '').trim().toLowerCase();
+        const cellClockOut = String(data[i][4] || '').trim();
         
-        if (cellTraineeId === String(traineeId).trim() && (cellClockOut === '' || cellClockOut === null)) {
+        if (cellTraineeId === searchId && cellClockOut === '') {
           rowIndex = i + 1;
           break;
         }
