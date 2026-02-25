@@ -6,11 +6,12 @@
     /* Giants Black */
     --success: #10b981;
     --bg-gradient: #000000;
-    --card-bg: rgba(30, 30, 30, 0.95);
-    --glass-border: rgba(255, 143, 0, 0.2);
-    --text-main: #ffffff;
-    --text-muted: #aaaaaa;
-    --shadow: 0 10px 40px -5px rgba(255, 143, 0, 0.1);
+    --card-bg: #121212;
+    --glass-border: #FF8F00;
+    --text-main: #FF8F00;
+    /* Orange text for high contrast on black */
+    --text-muted: #888888;
+    --shadow: 0 0 20px rgba(255, 143, 0, 0.2);
 }
 
 * {
@@ -83,19 +84,17 @@ body::before {
 
 .date-display {
     font-size: 0.9rem;
-    color: var(--text-muted);
+    color: var(--primary);
     font-weight: 400;
 }
 
 .status-card {
     background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 2.5rem 1.5rem;
+    border: 2px solid var(--primary);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
     text-align: center;
-    box-shadow: var(--shadow);
+    box-shadow: 0 0 30px rgba(255, 143, 0, 0.15);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -186,6 +185,16 @@ body::before {
     font-size: 2rem;
 }
 
+.btn-secondary {
+    background: #1a1a1a;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--primary-dark);
+}
+
 .btn-primary {
     background: var(--primary);
     color: white;
@@ -233,8 +242,9 @@ body::before {
 footer {
     text-align: center;
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--primary);
     margin-top: auto;
+    opacity: 0.8;
 }
 
 .user-selection {
@@ -261,20 +271,23 @@ footer {
 .input-group-inline input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--primary);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #000000;
     font-family: inherit;
     font-size: 1rem;
-    color: white;
+    color: var(--primary);
     transition: all 0.2s;
+}
+
+.input-group-inline input::placeholder {
+    color: #555555;
 }
 
 .input-group-inline input:focus {
     outline: none;
-    background: white;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    border-color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 143, 0, 0.5);
 }
 
 .modal {
