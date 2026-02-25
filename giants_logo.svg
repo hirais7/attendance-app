@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- YG Logo stylized -->
+  <rect width="200" height="200" rx="20" fill="#000000"/>
+  <path d="M40 40H70V130C70 145 60 160 40 160V140C50 140 50 135 50 130V40H40Z" fill="#FF8F00"/>
+  <path d="M80 40H160V60H125V160H95V60H80V40Z" fill="#FF8F00"/>
+  <path d="M125 100H160V120H125V100Z" fill="#FF8F00"/>
+</svg>
