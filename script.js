@@ -1,5 +1,6 @@
 // Configuration
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyE0TLrri0_XvARr0vjldYjoeT7PiHp8TZifxX7FYNr75HYkn9fSx7FcNmAfBcOJSLS/exec';
+
 // State
 let isWorking = localStorage.getItem('isWorking') === 'true';
 
@@ -66,8 +67,7 @@ async function handleAction(action) {
         return;
     }
 
-    showLoading(true);
-
+    // --- Immediate Status Save ---
     localStorage.setItem('traineeData', JSON.stringify({ id, name }));
 
     const payload = {
@@ -77,35 +77,30 @@ async function handleAction(action) {
         appUrl: window.location.href.split('?')[0].split('#')[0]
     };
 
-    try {
-        // Standard reliable POST
-        await fetch(GAS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        // Update UI state after confirmation of send
-        if (action === 'clockIn') {
-            isWorking = true;
-            localStorage.setItem('isWorking', 'true');
-            showToast(`✅ ${name}さん：出勤しました`);
-        } else if (action === 'clockOut') {
-            isWorking = false;
-            localStorage.setItem('isWorking', 'false');
-            showToast(`✅ ${name}さん：退勤しました`);
-        } else if (action === 'complete') {
-            showToast(`🎉 ${name}さん：課題完了を報告！`);
-        }
-
-        updateStatusUI();
-    } catch (error) {
-        console.error('Error:', error);
-        showToast('❌ 通信エラーが発生しました');
-    } finally {
-        showLoading(false);
+    // --- Optimistic UI Refresh (Instant feedback) ---
+    if (action === 'clockIn') {
+        isWorking = true;
+        localStorage.setItem('isWorking', 'true');
+        showToast(`✅ ${name}さん：出勤しました`);
+    } else if (action === 'clockOut') {
+        isWorking = false;
+        localStorage.setItem('isWorking', 'false');
+        showToast(`✅ ${name}さん：退勤しました`);
+    } else if (action === 'complete') {
+        showToast(`🎉 ${name}さん：課題完了を報告！`);
     }
+
+    updateStatusUI();
+
+    // --- Background Communication (No loading screen) ---
+    fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(error => {
+        console.error('GAS Send Error:', error);
+    });
 }
 
 function showLoading(show) {
