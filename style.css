@@ -6,12 +6,22 @@
     /* Electric Purple */
     --success: #00FF00;
     --rainbow-gradient: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
-    --bg-gradient: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    --card-bg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --text-main: #333333;
-    --text-muted: #666666;
-    --shadow: 0 10px 30px rgba(255, 0, 128, 0.2);
+    --bg-gradient: linear-gradient(-45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --text-main: #000000;
+    --text-muted: #444444;
+    --shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes rainbow-pulse {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+
+    100% {
+        filter: hue-rotate(360deg);
+    }
 }
 
 @keyframes gradientBG {
@@ -39,7 +49,7 @@ body {
     font-family: 'Outfit', 'Noto Sans JP', sans-serif;
     background: var(--bg-gradient);
     background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    animation: gradientBG 10s ease infinite, rainbow-pulse 5s linear infinite;
     color: var(--text-main);
     min-height: 100vh;
     display: flex;
@@ -98,8 +108,10 @@ body::before {
 }
 
 .status-card {
-    background: white;
-    border: none;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--glass-border);
     border-radius: 30px;
     padding: 2.5rem 1.5rem;
     text-align: center;
