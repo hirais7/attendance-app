@@ -1,14 +1,16 @@
 :root {
-    --primary: #2563eb;
-    --primary-light: #60a5fa;
-    --secondary: #64748b;
+    --primary: #FF8F00;
+    /* Giants Orange */
+    --primary-dark: #cc7200;
+    --secondary: #000000;
+    /* Giants Black */
     --success: #10b981;
-    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    --card-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --text-main: #1a1a1a;
+    --text-muted: #666666;
+    --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -167,27 +169,38 @@ header {
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: var(--primary-light);
+    background: var(--primary-dark);
 }
 
-.btn-secondary {
-    background: white;
-    color: var(--secondary);
+.giabbit-corner {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background-image: url('giabbit_character.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0.9;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
 }
 
-.btn-outline {
-    background: transparent;
-    border: 2px dashed var(--secondary);
-    color: var(--secondary);
-    box-shadow: none;
-    grid-column: span 2;
-    padding: 1rem;
+.status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
 }
 
-.btn-outline:hover {
-    background: rgba(100, 116, 139, 0.05);
-    border-color: var(--primary);
-    color: var(--primary);
+.status-badge.working {
+    background: #fff7ed;
+    color: var(--primary-dark);
+    border: 1px solid var(--primary);
 }
 
 .bottom-actions {
