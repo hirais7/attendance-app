@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出退勤打刻アプリ | Attendance</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <span class="icon">⏱️</span>
+                <h1>Attendance</h1>
+            </div>
+            <div class="date-display" id="date-display">2025/10/05</div>
+        </header>
+
+        <main>
+            <section class="status-card">
+                <div class="time-display" id="time-display">09:00:00</div>
+                <div class="user-info">
+                    <span class="label">研修生:</span>
+                    <span class="value" id="user-name">読み込み中...</span>
+                </div>
+                <div class="status-badge" id="work-status">勤務外</div>
+            </section>
+
+            <section class="actions">
+                <button id="btn-clock-in" class="btn btn-primary">
+                    <span class="btn-icon">☀️</span>
+                    <span class="btn-text">出勤</span>
+                </button>
+                <button id="btn-clock-out" class="btn btn-secondary" disabled>
+                    <span class="btn-icon">🌙</span>
+                    <span class="btn-text">退勤</span>
+                </button>
+            </section>
+
+            <section class="bottom-actions">
+                <button id="btn-complete" class="btn btn-outline">
+                    <span class="btn-icon">🎉</span>
+                    <span class="btn-text">課題完了報告</span>
+                </button>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Attendance App Training</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered!', reg))
+                    .catch(err => console.log('SW registration failed!', err));
+            });
+        }
+    </script>
+</body>
+</html>
