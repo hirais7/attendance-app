@@ -5,12 +5,12 @@
     --secondary: #000000;
     /* Giants Black */
     --success: #10b981;
-    --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --text-main: #1a1a1a;
-    --text-muted: #666666;
-    --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15);
+    --bg-gradient: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    --card-bg: rgba(30, 30, 30, 0.95);
+    --glass-border: rgba(255, 143, 0, 0.2);
+    --text-main: #ffffff;
+    --text-muted: #aaaaaa;
+    --shadow: 0 10px 40px -5px rgba(255, 143, 0, 0.1);
 }
 
 * {
@@ -56,7 +56,7 @@ header {
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: var(--secondary);
+    color: var(--primary);
     text-transform: uppercase;
 }
 
@@ -75,7 +75,7 @@ body::before {
     transform: translate(-50%, -50%) rotate(-30deg);
     font-size: 20vw;
     font-weight: 900;
-    color: rgba(255, 143, 0, 0.03);
+    color: rgba(255, 143, 0, 0.08);
     pointer-events: none;
     z-index: -1;
     white-space: nowrap;
@@ -261,12 +261,12 @@ footer {
 .input-group-inline input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
     font-family: inherit;
     font-size: 1rem;
-    color: var(--text-main);
+    color: white;
     transition: all 0.2s;
 }
 
