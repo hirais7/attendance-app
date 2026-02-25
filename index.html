@@ -29,12 +29,19 @@
         <main>
             <section class="status-card">
                 <div class="time-display" id="time-display">09:00:00</div>
-                <div class="user-info" id="user-info-display">
-                    <span class="label">研修生:</span>
-                    <span class="value" id="user-name">読み込み中...</span>
-                    <button id="btn-edit-user" class="btn-icon-small">✏️</button>
+
+                <div class="user-selection">
+                    <div class="input-group-inline">
+                        <label for="main-trainee-id">研修生ID</label>
+                        <input type="text" id="main-trainee-id" placeholder="user01">
+                    </div>
+                    <div class="input-group-inline">
+                        <label for="main-trainee-name">氏名</label>
+                        <input type="text" id="main-trainee-name" placeholder="あなたの名前">
+                    </div>
                 </div>
-                <div class="status-badge" id="work-status">勤務外</div>
+
+                <div class="status-badge" id="work-status">準備完了</div>
             </section>
 
             <section class="actions">
